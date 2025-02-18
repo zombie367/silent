@@ -120,8 +120,9 @@ body {
     transition: all 0.1s ease-out;
 }
 
-.menu li.active > a {
-    color: #fff !important;
+/* Ensure hover doesn't interfere with active state */
+.menu li:hover:not(.active) {
+    background-color: rgba(0, 102, 255, 0.1);
 }
 
 .menu li.active:hover {
@@ -177,31 +178,9 @@ body {
 .toggle-switch {
     width: 30px;
     height: 15px;
-    background: rgba(0, 102, 255, 0.3);
-    border-radius: 10px;
-    position: relative;
-    transition: background 0.3s;
-    cursor: pointer;
-}
-
-.toggle-switch[data-state="on"] {
     background: #0066ff;
-}
-
-.toggle-switch::before {
-    content: '';
-    position: absolute;
-    width: 11px;
-    height: 11px;
-    background: #fff;
-    border-radius: 50%;
-    top: 2px;
-    left: 2px;
-    transition: transform 0.3s;
-}
-
-.toggle-switch[data-state="on"]::before {
-    transform: translateX(15px);
+    border-radius: 10px;
+    margin-left: auto;
 }
 
 .value-display {
@@ -215,32 +194,4 @@ body {
     content: '↔';
     color: #0066ff;
     margin-left: 5px;
-}
-
-.submenu {
-    display: none;
-    padding-left: 20px;
-}
-
-li.active .submenu {
-    display: block;
-}
-
-.submenu li {
-    padding: 5px 0;
-}
-
-.submenu li a {
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 0.9em;
-}
-
-.menu > ul > li {
-    position: relative;
-    transition: all 0.2s ease;
-}
-
-.menu > ul > li.active {
-    background-color: rgba(0, 102, 255, 0.2);
 } 
