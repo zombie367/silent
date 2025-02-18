@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const menuItems = document.querySelectorAll('.menu > ul > li');
     let currentIndex = 0;
     
+    console.log('Menu items found:', menuItems.length); // Debug log
+    menuItems.forEach((item, i) => {
+        console.log('Menu item', i, ':', item.textContent.trim());
+    });
+
     // Function to send messages to Lua
     function sendToGame(action, data) {
         if (window.invokeNative) {
@@ -20,22 +25,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to update active menu item
     function updateActiveItem(index) {
+        console.log('Updating active item to index:', index); // Debug log
+        
         // Remove active class from all items
-        document.querySelectorAll('.menu li.active').forEach(item => {
-            item.classList.remove('active');
-        });
+        const previousActive = document.querySelector('.menu li.active');
+        if (previousActive) {
+            console.log('Removing active from:', previousActive.textContent.trim());
+            previousActive.classList.remove('active');
+        }
         
         // Add active class to the selected item
-        if (menuItems[index]) {
-            menuItems[index].classList.add('active');
-            
-            // Ensure the item is visible in the viewport
-            const itemRect = menuItems[index].getBoundingClientRect();
-            const menuRect = menu.getBoundingClientRect();
-            
-            if (itemRect.top < menuRect.top || itemRect.bottom > menuRect.bottom) {
-                menuItems[index].scrollIntoView({ block: 'nearest', behavior: 'auto' });
-            }
+        const targetItem = menuItems[index];
+        if (targetItem) {
+            console.log('Setting active to:', targetItem.textContent.trim());
+            targetItem.classList.add('active');
+            targetItem.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+        } else {
+            console.log('Target item not found for index:', index);
         }
         
         // Update scrollbar
@@ -57,24 +63,15 @@ document.addEventListener('DOMContentLoaded', function() {
         scrollbarThumb.style.top = `${thumbPosition}px`;
     }
 
-    // Handle messages from Lua
+    // Handle messages from Lua with better logging
     window.addEventListener('message', function(event) {
         const data = event.data;
-        console.log('Received message:', data);
+        console.log('Received message from Lua:', data);
 
-        switch(data.type) {
-            case 'forceUpdate':
-            case 'setActive':
-                currentIndex = data.index;
-                updateActiveItem(currentIndex);
-                break;
-                
-            case 'updateToggle':
-                const toggle = document.querySelector(`[data-action="${data.action}"] .toggle-switch`);
-                if (toggle) {
-                    toggle.setAttribute('data-state', data.state ? 'on' : 'off');
-                }
-                break;
+        if (data.type === 'forceUpdate' || data.type === 'setActive') {
+            console.log('Handling navigation. Current index:', currentIndex, 'New index:', data.index);
+            currentIndex = data.index;
+            updateActiveItem(currentIndex);
         }
     });
 
