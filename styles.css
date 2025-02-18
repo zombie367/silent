@@ -117,7 +117,6 @@ body {
 .menu li.active {
     background-color: rgba(0, 102, 255, 0.2) !important;
     box-shadow: 0 0 15px rgba(0, 102, 255, 0.3) !important;
-    transition: all 0.1s ease-out;
 }
 
 /* Ensure hover doesn't interfere with active state */
@@ -130,7 +129,7 @@ body {
     box-shadow: 0 0 15px rgba(0, 102, 255, 0.3) !important;
 }
 
-.menu a {
+.menu li a {
     color: #fff;
     text-decoration: none;
     display: flex;
@@ -138,6 +137,10 @@ body {
     align-items: center;
     font-size: 14px;
     letter-spacing: 0.5px;
+}
+
+.menu li.active a {
+    color: #fff;
 }
 
 .arrow {
