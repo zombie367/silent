@@ -18,6 +18,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Function to update active menu item
+    function updateActiveItem(index) {
+        // Remove active class from all items
+        document.querySelectorAll('.menu li.active').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Add active class to the selected item
+        if (menuItems[index]) {
+            menuItems[index].classList.add('active');
+            
+            // Ensure the item is visible in the viewport
+            const itemRect = menuItems[index].getBoundingClientRect();
+            const menuRect = menu.getBoundingClientRect();
+            
+            if (itemRect.top < menuRect.top || itemRect.bottom > menuRect.bottom) {
+                menuItems[index].scrollIntoView({ block: 'nearest', behavior: 'auto' });
+            }
+        }
+        
+        // Update scrollbar
+        updateScrollbar();
+    }
+
     // Scrollbar update function
     function updateScrollbar() {
         const scrollPercentage = menu.scrollTop / (menu.scrollHeight - menu.clientHeight);
@@ -33,37 +57,24 @@ document.addEventListener('DOMContentLoaded', function() {
         scrollbarThumb.style.top = `${thumbPosition}px`;
     }
 
-    // Function to update active menu item
-    function updateActiveItem(index) {
-        menuItems.forEach(item => {
-            item.classList.remove('active');
-        });
-        
-        if (menuItems[index]) {
-            menuItems[index].classList.add('active');
-            menuItems[index].scrollIntoView({
-                behavior: 'smooth',
-                block: 'nearest'
-            });
-        }
-    }
-
     // Handle messages from Lua
     window.addEventListener('message', function(event) {
         const data = event.data;
         console.log('Received message:', data);
 
-        if (data.type === 'forceUpdate') {
-            currentIndex = data.index;
-            updateActiveItem(currentIndex);
-        } else if (data.type === 'setActive') {
-            currentIndex = data.index;
-            updateActiveItem(currentIndex);
-        } else if (data.type === 'updateToggle') {
-            const toggle = document.querySelector(`[data-action="${data.action}"] .toggle-switch`);
-            if (toggle) {
-                toggle.setAttribute('data-state', data.state ? 'on' : 'off');
-            }
+        switch(data.type) {
+            case 'forceUpdate':
+            case 'setActive':
+                currentIndex = data.index;
+                updateActiveItem(currentIndex);
+                break;
+                
+            case 'updateToggle':
+                const toggle = document.querySelector(`[data-action="${data.action}"] .toggle-switch`);
+                if (toggle) {
+                    toggle.setAttribute('data-state', data.state ? 'on' : 'off');
+                }
+                break;
         }
     });
 
@@ -99,4 +110,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial setup
     updateScrollbar();
     menu.addEventListener('scroll', updateScrollbar);
+
+    // Debug helper
+    window.debugMenu = {
+        moveUp: () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateActiveItem(currentIndex);
+                console.log('Moving up to index:', currentIndex);
+            }
+        },
+        moveDown: () => {
+            if (currentIndex < menuItems.length - 1) {
+                currentIndex++;
+                updateActiveItem(currentIndex);
+                console.log('Moving down to index:', currentIndex);
+            }
+        },
+        getCurrentIndex: () => currentIndex
+    };
 }); 
